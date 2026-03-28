@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - krish travel</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-header {
+            background: #1e3c72;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-card.cancelled {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+        .stat-card h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            background: #e0e0e0;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .tab-btn.active {
+            background: #1e3c72;
+            color: white;
+        }
+        .booking-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .booking-table th {
+            background: #1e3c72;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        .booking-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .booking-table tr:hover {
+            background: #f5f5f5;
+        }
+        .booking-table tr.cancelled-row {
+            background: #ffe6e6;
+            color: #999;
+        }
+        .logout-btn {
+            background: #dc3545;
+            padding: 8px 20px;
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+        }
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        .filter-section {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .filter-section input, .filter-section select {
+            width: auto;
+            padding: 8px 12px;
+        }
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-confirmed {
+            background: #28a745;
+            color: white;
+        }
+        .status-cancelled {
+            background: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header" style="border-radius: 20px; margin-bottom: 20px; margin-top: 20px;">
+        <h1 style="word-spacing: 8px;">📊 krishtravel Admin Panel</h1>
+        <a href="index.html" class="logout-btn" style="border-radius: 20px; margin-right: 20px; font-size: 20px;" onclick="adminLogout()">Logout</a>
+    </div>
+
+    <div class="container">
+        <!-- Stats Section -->
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Bookings</h3>
+                <div class="number" id="totalBookings">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Active Bookings</h3>
+                <div class="number" id="activeBookings">0</div>
+            </div>
+            <div class="stat-card cancelled">
+                <h3>Cancelled Bookings</h3>
+                <div class="number" id="cancelledBookings">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Revenue</h3>
+                <div class="number" id="totalRevenue">₹0</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs" style="gap: 20px; margin-top: 30px;">
+            <button class="tab-btn active" onclick="showTab('active')">✅ Active Bookings</button>
+            <button class="tab-btn" onclick="showTab('cancelled')">❌ Cancelled Bookings</button>
+            <button class="tab-btn" onclick="showTab('all')">📋 All Bookings</button>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section" style="gap: 20px;">
+            <input type="text" id="searchInput" placeholder="Search by Name, ID or Phone" onkeyup="filterBookings()">
+            <select id="typeFilter" onchange="filterBookings()">
+                <option value="all">All Types</option>
+                <option value="bus">Bus Only</option>
+                <option value="train">Train Only</option>
+            </select>
+            <input type="date" id="dateFilter" onchange="filterBookings()">
+            <button onclick="clearFilters()">Clear Filters</button>
+            <button onclick="exportToCSV()">📥 Export to CSV</button>
+        </div>
+
+        <!-- Bookings Table -->
+        <h3 id="tableTitle" style="margin-top: 30px;">📋 Active Bookings</h3>
+        <table class="booking-table" id="bookingsTable">
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Type</th>
+                    <th>Customer Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>From → To</th>
+                    <th>Date</th>
+                    <th>Class/Bus Type</th>
+                    <th>Amount (₹)</th>
+                    <th>Payment Mode</th>
+                    <th>Status</th>
+                    <th>Cancelled On</th>
+                    <th>Cancel Reason</th>
+                </tr>
+            </thead>
+            <tbody id="bookingsTableBody">
+                <tr><td colspan="13" style="text-align:center;">Loading bookings...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        if (localStorage.getItem("adminLoggedIn") !== "true") {
+            window.location.href = "admin-login.html";
+        }
+
+        let allBookings = [];
+        let currentTab = "active";
+
+        function loadBookings() {
+            let stored = localStorage.getItem("bookings");
+            if (stored) {
+                allBookings = JSON.parse(stored);
+            } else {
+                allBookings = [];
+            }
+            updateStats();
+            displayCurrentTab();
+        }
+
+        function updateStats() {
+            let total = allBookings.length;
+            let active = allBookings.filter(b => b.status !== "Cancelled").length;
+            let cancelled = allBookings.filter(b => b.status === "Cancelled").length;
+            
+            let revenue = allBookings.reduce((sum, b) => {
+                if (b.status !== "Cancelled") {
+                    let price = Number(b.price);
+                    if (isNaN(price)) price = 0;
+                    return sum + price;
+                }
+                return sum;
+            }, 0);
+            
+            document.getElementById("totalBookings").innerText = total;
+            document.getElementById("activeBookings").innerText = active;
+            document.getElementById("cancelledBookings").innerText = cancelled;
+            document.getElementById("totalRevenue").innerText = "₹" + revenue;
+        }
+
+        function showTab(tab) {
+            currentTab = tab;
+            
+            // Update active button style
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update title
+            if (tab === "active") {
+                document.getElementById("tableTitle").innerText = "✅ Active Bookings";
+            } else if (tab === "cancelled") {
+                document.getElementById("tableTitle").innerText = "❌ Cancelled Bookings";
+            } else {
+                document.getElementById("tableTitle").innerText = "📋 All Bookings";
+            }
+            
+            displayCurrentTab();
+        }
+
+        function getFilteredBookings() {
+            let search = document.getElementById("searchInput").value.toLowerCase();
+            let type = document.getElementById("typeFilter").value;
+            let date = document.getElementById("dateFilter").value;
+            
+            let filtered = allBookings.filter(booking => {
+                let matchSearch = (booking.name || "").toLowerCase().includes(search) || 
+                                 booking.id.toString().includes(search) ||
+                                 (booking.phone || "").includes(search);
+                let matchType = type === "all" || booking.type === type;
+                let matchDate = !date || booking.date === date;
+                
+                // Tab filter
+                let matchTab = false;
+                if (currentTab === "active") {
+                    matchTab = booking.status !== "Cancelled";
+                } else if (currentTab === "cancelled") {
+                    matchTab = booking.status === "Cancelled";
+                } else {
+                    matchTab = true;
+                }
+                
+                return matchSearch && matchType && matchDate && matchTab;
+            });
+            
+            return filtered;
+        }
+
+        function displayCurrentTab() {
+            let filtered = getFilteredBookings();
+            displayBookings(filtered);
+        }
+
+        function displayBookings(bookings) {
+            let tbody = document.getElementById("bookingsTableBody");
+            if (bookings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;">No bookings found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = "";
+            bookings.forEach(booking => {
+                let price = Number(booking.price);
+                if (isNaN(price)) price = 0;
+                
+                let rowClass = booking.status === "Cancelled" ? "cancelled-row" : "";
+                let row = tbody.insertRow();
+                row.className = rowClass;
+                
+                row.innerHTML = `
+                    <td>${booking.id}</td>
+                    <td>${booking.type.toUpperCase()}</td>
+                    <td>${booking.name || "Unknown"}</td>
+                    <td>${booking.phone || "N/A"}</td>
+                    <td>${booking.email || "N/A"}</td>
+                    <td>${booking.from || "?"} → ${booking.to || "?"}</td>
+                    <td>${booking.date || "Unknown"}</td>
+                    <td>${booking.className || booking.busName || "Standard"}</td>
+                    <td><strong>₹${price}</strong></td>
+                    <td>${booking.paymentMode || "Not Recorded"}</td>
+                    <td><span class="status-badge ${booking.status === "Cancelled" ? 'status-cancelled' : 'status-confirmed'}">${booking.status || "Confirmed"}</span></td>
+                    <td>${booking.cancelledAt || "-"}</td>
+                    <td>${booking.cancelReason || "-"}</td>
+                `;
+            });
+        }
+
+        function filterBookings() {
+            displayCurrentTab();
+        }
+
+        function clearFilters() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("typeFilter").value = "all";
+            document.getElementById("dateFilter").value = "";
+            displayCurrentTab();
+        }
+
+        function exportToCSV() {
+            let bookingsToExport = getFilteredBookings();
+            
+            if (bookingsToExport.length === 0) {
+                alert("No data to export!");
+                return;
+            }
+            
+            let csv = "Ticket ID,Type,Customer Name,Phone,Email,From,To,Date,Class/Type,Amount (₹),Payment Mode,Status,Cancelled On,Cancel Reason\n";
+            bookingsToExport.forEach(b => {
+                let price = Number(b.price);
+                if (isNaN(price)) price = 0;
+                csv += `${b.id},${b.type.toUpperCase()},${b.name || "Unknown"},${b.phone || "N/A"},${b.email || "N/A"},${b.from || "?"},${b.to || "?"},${b.date || "Unknown"},${b.className || b.busName || "Standard"},${price},${b.paymentMode || "Not Recorded"},${b.status || "Confirmed"},${b.cancelledAt || "-"},${b.cancelReason || "-"}\n`;
+            });
+            
+            let blob = new Blob([csv], { type: "text/csv" });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.href = url;
+            a.download = "travel-easy-bookings.csv";
+            a.click();
+            URL.revokeObjectURL(url);
+            alert("✅ Report downloaded successfully!");
+        }
+
+        function adminLogout() {
+            localStorage.removeItem("adminLoggedIn");
+        }
+
+        loadBookings();
+    </script>
+</body>
+</html>

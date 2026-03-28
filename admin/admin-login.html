@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - TravelEasy</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .login-box {
+            max-width: 400px;
+            margin: 100px auto;
+            text-align: center;
+        }
+        .login-box h2 {
+            margin-bottom: 20px;
+            color: #1e3c72;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🔐 Admin Login</h1>
+        <nav><a href="index.html">← Back to Website</a></nav>
+    </header>
+
+    <div class="container login-box">
+        <h2 >Admin Panel Access </h2>
+        <label style="margin-top: 20px; ">Username:</label>
+        <input type="text" id="username" placeholder="Enter admin username" style="border-radius: 5px; padding: 10px;">
+        <br>
+        <label style="margin-left: 4px;">Password:</label>
+        <input type="password" id="password" placeholder="Enter admin password" style="margin-top: 20px ; border-radius: 5px; padding: 10px;">
+        <br>
+        <button onclick="adminLogin()" style="margin-left: 50px; margin-top: 20px;">Login</button>
+        <p class="error" id="errorMsg"></p>
+    </div>
+
+    <script>
+        function adminLogin() {
+            let username = document.getElementById('username').value;
+            let password = document.getElementById('password').value;
+            
+            // Admin credentials (you can change these)
+            if (username === "admin" && password === "admin123") {
+                localStorage.setItem("adminLoggedIn", "true");
+                window.location.href = "admin.html";
+            } else {
+                document.getElementById('errorMsg').innerText = "❌ Invalid username or password!";
+            }
+        }
+    </script>
+</body>
+</html>

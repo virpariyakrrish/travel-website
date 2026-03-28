@@ -1,0 +1,51 @@
+<script>
+    let booking = JSON.parse(localStorage.getItem("tempBooking"));
+
+    window.onload = function() {
+        if (booking) {
+            document.getElementById("summary").innerHTML = `
+                <strong>${booking.type.toUpperCase()}</strong><br>
+                Name: ${booking.name}<br>
+                From: ${booking.from} → To: ${booking.to}<br>
+                Date: ${booking.date}<br>
+                Total: ₹${booking.price}
+            `;
+        } else {
+            document.getElementById("summary").innerHTML = "No booking found. Please book a ticket first.";
+        }
+    };
+
+    function confirmPayment() {
+        if (!booking) {
+            alert("No booking found. Please book a ticket first.");
+            location.href = "index.html";
+            return;
+        }
+        
+        let paymentMode = document.getElementById("paymentMode").value;
+
+        // Save booking with payment mode
+        let newBooking = {
+            id: Date.now(),
+            type: booking.type,
+            name: booking.name,
+            from: booking.from,
+            to: booking.to,
+            date: booking.date,
+            time: booking.time || "Any",
+            price: booking.price,
+            className: booking.className || booking.busName || "Standard",
+            paymentMode: paymentMode,
+            status: "Confirmed"
+        };
+        
+        let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+        bookings.push(newBooking);
+        localStorage.setItem("bookings", JSON.stringify(bookings));
+
+        localStorage.removeItem("tempBooking");
+        
+        alert(`✅ Payment Successful via ${paymentMode}\n🎫 Ticket Confirmed!\n\nTicket ID: ${newBooking.id}\nTotal Amount: ₹${booking.price}\n\nThank you for booking with TravelEasy!`);
+        location.href = "index.html";
+    }
+</script>
