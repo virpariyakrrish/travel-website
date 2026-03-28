@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support - TravelEasy</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .support-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 0 20px;
+        }
+        .support-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .support-card:hover {
+            transform: translateY(-5px);
+        }
+        .support-card .icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+        .support-card h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+        }
+        .support-card p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .support-card .contact {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2a5298;
+            margin: 15px 0;
+        }
+        .support-card button {
+            background: #1e3c72;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: auto;
+        }
+        .support-card button:hover {
+            background: #2a5298;
+        }
+        .faq-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1000px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .faq-section h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .faq-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        .faq-question {
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-question:hover {
+            color: #2a5298;
+        }
+        .faq-answer {
+            padding-top: 10px;
+            color: #666;
+            display: none;
+        }
+        .faq-answer.show {
+            display: block;
+        }
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .quick-btn {
+            background: #f0f2f5;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #1e3c72;
+            font-weight: bold;
+        }
+        .quick-btn:hover {
+            background: #e0e0e0;
+        }
+        .ticket-track {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin: 20px auto;
+            max-width: 1000px;
+            text-align: center;
+        }
+        .ticket-track input {
+            width: 60%;
+            margin: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+        }
+        .ticket-track button {
+            background: white;
+            color: #1e3c72;
+            width: auto;
+            padding: 12px 25px;
+        }
+
+        .back-link {
+            color: white;
+            background: #667eea;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin-left: 94%;
+        }
+        
+        .back-link:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 style="text-align: center; padding-top: 2%;">📞 Customer Support</h1>
+        <nav>
+            <a class="back-link" href="index.html">← Back</a>
+        </nav>
+    </header>
+
+    <!-- Track Ticket Section -->
+    <div class="ticket-track">
+        <h2 style="margin-bottom: 2%; margin-left: -10%;">🔍 Track Your Ticket</h2>
+        <p style="margin-bottom: 2%; margin-left: -8%;">Enter your Ticket ID to check status and live location</p>
+        <input type="number" id="trackTicketId" placeholder="Enter Ticket ID">
+        <button onclick="trackTicket()">Track Now</button>
+        <div id="trackResult" style="margin-top: 20px;"></div>
+    </div>
+
+    <!-- Support Cards -->
+    <div class="support-container">
+        <div class="support-card">
+            <div class="icon">📞</div>
+            <h3>24/7 Phone Support</h3>
+            <p>Call us anytime for instant help</p>
+            <div class="contact">+91-9427385972</div>
+            <button onclick="makeCall()">Call Now</button>
+        </div>
+
+        <div class="support-card">
+            <div class="icon">💬</div>
+            <h3>WhatsApp Support</h3>
+            <p>Chat with our support team</p>
+            <div class="contact">+91-9427385972</div>
+            <button onclick="whatsAppChat()">Chat on WhatsApp</button>
+        </div>
+
+        <div class="support-card">
+            <div class="icon">📧</div>
+            <h3>Email Support</h3>
+            <p>Get response within 2 hours</p>
+            <div class="contact">krish@gmail.com</div>
+            <button onclick="sendEmail()">Send Email</button>
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="faq-section">
+        <h2>⚡ Quick Actions</h2>
+        <div class="quick-actions">
+            <a href="cancellation.html" class="quick-btn">❌ Cancel Ticket</a>
+            <a href="#" onclick="viewBookings()" class="quick-btn">📋 My Bookings</a>
+            <a href="#" onclick="checkRefund()" class="quick-btn">💰 Check Refund Status</a>
+            <a href="#" onclick="complaintForm()" class="quick-btn">📝 Raise Complaint</a>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <h2>❓ Frequently Asked Questions</h2>
+        
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                How do I cancel my ticket?
+                <span>+</span>
+            </div>
+            <div class="faq-answer">
+                You can cancel your ticket from the Cancellation page. 30% cancellation charges apply and 70% refund will be processed within 5-7 business days.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                How to get refund after cancellation?
+                <span>+</span>
+            </div>
+            <div class="faq-answer">
+                Refund is automatically processed after cancellation. 70% of the ticket amount will be credited to your original payment method within 5-7 business days.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                How to track my bus/train live?
+                <span>+</span>
+            </div>
+            <div class="faq-answer">
+                Enter your Ticket ID in the Track Ticket section above. You can see the live location and estimated arrival time of your bus/train.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                Women discount offer details?
+                <span>+</span>
+            </div>
+            <div class="faq-answer">
+                Women get 10% discount on all bus and train bookings. The discount is automatically applied when you confirm during booking.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                How to get ticket on WhatsApp?
+                <span>+</span>
+            </div>
+            <div class="faq-answer">
+                After successful payment, ticket is automatically sent to your registered WhatsApp number within 2 minutes. Make sure to provide correct phone number.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                Payment failed but money deducted?
+                <span>+</span>
+            </div>
+            <div class="faq-answer">
+                If money is deducted but booking failed, the amount will be automatically refunded within 5-7 business days. Contact support if not received.
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; background: #1e3c72; color: white; margin-top: 40px;">
+        <p>© 2025 TravelEasy | Safe & Secure Booking | 24/7 Customer Support</p>
+        <p>📞 Emergency: +91-9427385972 | 📧 support@traveleasy.com</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        function trackTicket() {
+            let ticketId = document.getElementById("trackTicketId").value;
+            if (!ticketId) {
+                alert("Please enter Ticket ID");
+                return;
+            }
+            
+            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            let booking = bookings.find(b => b.id == ticketId);
+            
+            let resultDiv = document.getElementById("trackResult");
+            
+            if (!booking) {
+                resultDiv.innerHTML = `<div style="background:#f8d7da; padding:15px; border-radius:8px; color:#721c24;">
+                    ❌ Ticket ID ${ticketId} not found. Please check and try again.
+                </div>`;
+                return;
+            }
+            
+            let statusColor = booking.status === "Cancelled" ? "#dc3545" : "#28a745";
+            let trackingInfo = "";
+            
+            if (booking.status !== "Cancelled") {
+                trackingInfo = `
+                    <div style="background:white; padding:15px; border-radius:8px; margin-top:10px;">
+                        <p><strong>📍 Current Location:</strong> ${booking.tracking?.currentLocation || booking.from || "On the way"}</p>
+                        <p><strong>⏱️ Status:</strong> ${booking.tracking?.status || "On Time"}</p>
+                        <p><strong>🕐 Last Updated:</strong> ${booking.tracking?.lastUpdated || "Just now"}</p>
+                        <div class="progress-bar" style="background:#e0e0e0; border-radius:10px; margin-top:10px;">
+                            <div class="progress-fill" style="background:#28a745; height:20px; border-radius:10px; width:${Math.random() * 50 + 30}%"></div>
+                        </div>
+                        <p style="margin-top:10px;">🚍 Estimated Arrival: On schedule</p>
+                    </div>
+                `;
+            }
+            
+            resultDiv.innerHTML = `
+                <div style="background:white; padding:20px; border-radius:12px; color:#333; text-align:left;">
+                    <h3 style="color:#1e3c72;">🎫 Ticket Details</h3>
+                    <hr>
+                    <p><strong>Ticket ID:</strong> ${booking.id}</p>
+                    <p><strong>Type:</strong> ${booking.type.toUpperCase()}</p>
+                    <p><strong>Name:</strong> ${booking.name}</p>
+                    <p><strong>Phone:</strong> ${booking.phone}</p>
+                    <p><strong>From:</strong> ${booking.from} → ${booking.to}</p>
+                    <p><strong>Date:</strong> ${booking.date}</p>
+                    <p><strong>Vehicle:</strong> ${booking.busNumber || booking.trainNumber || booking.className}</p>
+                    <p><strong>Amount:</strong> ₹${booking.price}</p>
+                    <p><strong>Status:</strong> <span style="color:${statusColor}; font-weight:bold;">${booking.status}</span></p>
+                    ${booking.status === "Cancelled" ? `<p><strong>Cancel Reason:</strong> ${booking.cancelReason || "Not specified"}</p>` : ""}
+                    ${trackingInfo}
+                </div>
+            `;
+        }
+        
+        function makeCall() {
+            window.location.href = "tel:+919876543210";
+        }
+        
+        function whatsAppChat() {
+            let message = encodeURIComponent("Hello, I need help with my TravelEasy booking.");
+            window.open(`https://wa.me/919876543210?text=${message}`, '_blank');
+        }
+        
+        function sendEmail() {
+            let subject = encodeURIComponent("TravelEasy Support Request");
+            let body = encodeURIComponent("Hello,\n\nI need assistance with my booking.\n\nTicket ID: \n\nRegards");
+            window.location.href = `mailto:support@traveleasy.com?subject=${subject}&body=${body}`;
+        }
+        
+        function checkRefund() {
+            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            let cancelled = bookings.filter(b => b.status === "Cancelled");
+            
+            if (cancelled.length === 0) {
+                alert("No cancelled bookings found.");
+                return;
+            }
+            
+            let msg = "💰 REFUND STATUS\n\n";
+            cancelled.forEach(b => {
+                let refund = b.price * 0.7;
+                msg += `Ticket ID: ${b.id}\nAmount: ₹${b.price} | Refund: ₹${refund}\nStatus: Processing (5-7 days)\n\n`;
+            });
+            alert(msg);
+        }
+        
+        function complaintForm() {
+            let issue = prompt("Please describe your issue:", "");
+            if (issue && issue.trim()) {
+                let emailBody = encodeURIComponent(`Hello TravelEasy Support,\n\nI have a complaint:\n${issue}\n\nTicket ID: \nPhone: \n\nPlease resolve this at the earliest.\n\nRegards`);
+                window.location.href = `mailto:support@traveleasy.com?subject=Complaint - TravelEasy&body=${emailBody}`;
+                alert("✅ Complaint registered! Our team will contact you within 24 hours.");
+            }
+        }
+        
+        function toggleFAQ(element) {
+            let answer = element.nextElementSibling;
+            let icon = element.querySelector('span');
+            answer.classList.toggle('show');
+            if (answer.classList.contains('show')) {
+                icon.innerHTML = '−';
+            } else {
+                icon.innerHTML = '+';
+            }
+        }
+        
+        // Also add viewBookings function if not in script.js
+        if (typeof viewBookings !== 'function') {
+            window.viewBookings = function() {
+                let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+                if (bookings.length === 0) {
+                    alert("No bookings found.");
+                    return;
+                }
+                let msg = "📋 YOUR BOOKINGS:\n\n";
+                bookings.forEach(b => {
+                    msg += `ID: ${b.id} | ${b.type.toUpperCase()} | ${b.from} → ${b.to} | ${b.date} | ₹${b.price} | ${b.status}\n`;
+                });
+                alert(msg);
+            };
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Payment - TravelEasy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            color: #667eea;
+            font-size: 1.8rem;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h3 {
+            color: #333;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            padding-left: 12px;
+        }
+        
+        .booking-summary {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .booking-summary p {
+            margin: 8px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .booking-summary strong {
+            color: #667eea;
+        }
+        
+        hr {
+            margin: 20px 0;
+            border: none;
+            border-top: 1px solid #eee;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            background: white;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:first-of-type {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        button:first-of-type:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:last-of-type {
+            background: #f5f5f5;
+            color: #666;
+        }
+        
+        button:last-of-type:hover {
+            background: #e0e0e0;
+        }
+        
+        .price-highlight {
+            font-size: 1.3rem;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        input, textarea {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>💳 Payment</h1>
+    </header>
+    
+    <div class="container">
+        <h3>📋 Booking Summary</h3>
+        <div class="booking-summary" id="summary">
+            <p>Loading booking details...</p>
+        </div>
+        
+        <hr>
+        
+        <h3>💰 Select Payment Method</h3>
+        <select id="paymentMode">
+            <option value="UPI">📱 UPI (Google Pay, PhonePe, Paytm)</option>
+            <option value="Card">💳 Credit/Debit Card</option>
+            <option value="NetBanking">🏦 Net Banking</option>
+            <option value="Cash">💵 Cash at Counter</option>
+        </select>
+        
+        <button onclick="confirmPayment()">✅ Confirm & Book</button>
+        <button onclick="location.href='index.html'">❌ Cancel & Go Home</button>
+    </div>
+
+    <script>
+        // Get booking data from localStorage
+        let booking = null;
+        
+        try {
+            let storedData = localStorage.getItem("tempBooking");
+            console.log("Stored data:", storedData);
+            
+            if (storedData) {
+                booking = JSON.parse(storedData);
+                console.log("Parsed booking:", booking);
+            }
+        } catch(e) {
+            console.error("Error parsing booking:", e);
+        }
+        
+        // Display booking summary on page load
+        window.onload = function() {
+            if (booking && booking.name) {
+                document.getElementById("summary").innerHTML = `
+                    <p>🎫 <strong>${booking.type ? booking.type.toUpperCase() : 'BUS'} TICKET</strong></p>
+                    <p>👤 <strong>Name:</strong> ${booking.name || 'Not provided'}</p>
+                    <p>📞 <strong>Phone:</strong> ${booking.phone || 'Not provided'}</p>
+                    <p>✉️ <strong>Email:</strong> ${booking.email || 'Not provided'}</p>
+                    <p>📍 <strong>From:</strong> ${booking.from || 'Not provided'} → <strong>To:</strong> ${booking.to || 'Not provided'}</p>
+                    <p>📅 <strong>Travel Date:</strong> ${booking.date || 'Not provided'}</p>
+                    <p>⏰ <strong>Departure Time:</strong> ${booking.time || '6:00 AM'}</p>
+                    <p>🚌 <strong>Bus Type:</strong> ${booking.className || booking.busName || 'Standard AC'}</p>
+                    <hr>
+                    <p class="price-highlight">💰 <strong>Total Amount:</strong> ₹${booking.price || '0'}</p>
+                `;
+            } else {
+                document.getElementById("summary").innerHTML = `
+                    <p>❌ No booking found!</p>
+                    <p>Please book a ticket first from the home page.</p>
+                    <button onclick="location.href='index.html'" style="margin-top:10px; background:#667eea; color:white;">Go to Home</button>
+                `;
+            }
+        };
+        
+        // WhatsApp message send function
+        function sendTicketViaWhatsApp(phone, message) {
+            // Remove any non-digit characters from phone number
+            let cleanPhone = phone.replace(/[^0-9]/g, '');
+            
+            // Add country code if not present
+            if (!cleanPhone.startsWith('91') && cleanPhone.length === 10) {
+                cleanPhone = '91' + cleanPhone;
+            }
+            
+            let whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+            return true;
+        }
+        
+        // Email send function
+        function sendTicketViaEmail(email, subject, body) {
+            let mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(mailtoUrl, '_blank');
+            return true;
+        }
+        
+        // Main payment confirmation function
+        function confirmPayment() {
+            // Check if booking exists
+            if (!booking || !booking.name) {
+                alert("❌ No booking found! Please book a ticket first.");
+                location.href = "index.html";
+                return;
+            }
+            
+            let paymentMode = document.getElementById("paymentMode").value;
+            let paymentText = document.getElementById("paymentMode").options[document.getElementById("paymentMode").selectedIndex].text;
+            
+            // Create complete booking object
+            let newBooking = {
+                id: Date.now(),
+                bookingId: "TRAVEL" + Date.now(),
+                type: booking.type || "bus",
+                name: booking.name,
+                phone: booking.phone,
+                email: booking.email,
+                from: booking.from,
+                to: booking.to,
+                date: booking.date,
+                time: booking.time || "6:00 AM",
+                price: booking.price,
+                className: booking.className || booking.busName || "Standard AC",
+                paymentMode: paymentText,
+                paymentMethod: paymentMode,
+                status: "Confirmed",
+                bookingDate: new Date().toLocaleString(),
+                cancelledAt: null,
+                cancelReason: null
+            };
+            
+            // Save to localStorage
+            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            bookings.push(newBooking);
+            localStorage.setItem("bookings", JSON.stringify(bookings));
+            
+            // Remove temporary booking
+            localStorage.removeItem("tempBooking");
+            
+            // Create ticket message
+            let ticketMessage = `
+╔══════════════════════════════════════╗
+║     🎫 TRAVEL EASY - TICKET 🎫       ║
+╠══════════════════════════════════════╣
+║ Ticket ID: ${newBooking.bookingId}
+║ Type: ${newBooking.type.toUpperCase()}
+║ Name: ${newBooking.name}
+║ Phone: ${newBooking.phone}
+║ From: ${newBooking.from}
+║ To: ${newBooking.to}
+║ Date: ${newBooking.date}
+║ Time: ${newBooking.time}
+║ Bus: ${newBooking.className}
+║ Amount: ₹${newBooking.price}
+║ Payment: ${paymentText}
+║ Status: ✅ CONFIRMED
+╚══════════════════════════════════════╝
+Thank you for choosing TravelEasy!
+For support: +91 98765 43210
+            `;
+            
+            let emailSubject = `TravelEasy Ticket Confirmed - ID: ${newBooking.bookingId}`;
+            
+            // Show success message
+            alert(`✅ PAYMENT SUCCESSFUL!\n\n🎫 Ticket ID: ${newBooking.bookingId}\n💰 Amount: ₹${newBooking.price}\n💳 Payment Mode: ${paymentText}\n\n📧 Ticket will be sent to your email\n💬 WhatsApp message will be sent\n\nThank you for booking with TravelEasy!`);
+            
+            // Send via email and WhatsApp
+            if (booking.email && booking.email.includes('@')) {
+                sendTicketViaEmail(booking.email, emailSubject, ticketMessage);
+            }
+            
+            if (booking.phone && booking.phone.length >= 10) {
+                sendTicketViaWhatsApp(booking.phone, ticketMessage);
+            }
+            
+            // Redirect to home page after 2 seconds
+            setTimeout(function() {
+                location.href = "index.html";
+            }, 2000);
+        }
+        
+        // Check if user came directly to payment page
+        if (!booking) {
+            console.log("No booking data found. User may have come directly to payment page.");
+        }
+    </script>
+</body>
+</html>

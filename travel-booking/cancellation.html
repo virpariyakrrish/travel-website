@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cancel Ticket - TravelEasy</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header><h1>❌ Cancel Ticket</h1></header>
+    <div class="container">
+        <div class="warning">
+            ⚠️ Cancellation Policy:<br>
+            • 30% cancellation charges<br>
+            • 70% refund will be given<br>
+            • Refund takes 5-7 business days
+        </div>
+        <label>Enter Ticket ID:</label>
+        <input type="number" id="cancelId" placeholder="Ticket ID">
+        
+        <label>Registered Phone Number (for verification):</label>
+        <input type="tel" id="phone" placeholder="Enter your 10-digit phone number">
+        
+        <label>Reason for Cancellation:</label>
+        <select id="cancelReason">
+            <option>Change of plans</option>
+            <option>Wrong date selected</option>
+            <option>Better fare found</option>
+            <option>Emergency</option>
+            <option>Other</option>
+        </select>
+        
+        <button onclick="cancelAndRefund()">Cancel Ticket</button>
+        <br><br>
+        <button onclick="viewBookings()">View My Bookings</button>
+    </div>
+
+    <script>
+        function cancelAndRefund() {
+            let id = document.getElementById("cancelId").value;
+            let phone = document.getElementById("phone").value;
+            let reason = document.getElementById("cancelReason").value;
+            
+            if (!id || !phone) {
+                alert("Please enter Ticket ID and Phone Number.");
+                return;
+            }
+            
+            if (!/^\d{10}$/.test(phone)) {
+                alert("Please enter a valid 10-digit phone number.");
+                return;
+            }
+            
+            cancelTicketWithDetails(parseInt(id), phone, reason);
+        }
+        
+        function cancelTicketWithDetails(ticketId, phone, reason) {
+            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            let index = bookings.findIndex(b => b.id == ticketId && b.phone == phone);
+            
+            if (index !== -1) {
+                let booking = bookings[index];
+                
+                if (booking.status === "Cancelled") {
+                    alert("❌ This ticket is already cancelled!");
+                    return;
+                }
+                
+                let originalPrice = booking.price;
+                let deduction = originalPrice * 0.30;
+                let refund = originalPrice - deduction;
+                
+                // Mark as cancelled with details
+                booking.status = "Cancelled";
+                booking.cancelledAt = new Date().toLocaleString();
+                booking.cancelReason = reason;
+                booking.refundAmount = refund;
+                booking.deductionAmount = deduction;
+                
+                bookings[index] = booking;
+                localStorage.setItem("bookings", JSON.stringify(bookings));
+                
+                // Send cancellation confirmation
+                let cancelMessage = `❌ TRAVEL EASY - TICKET CANCELLED ❌\n\nTicket ID: ${ticketId}\nName: ${booking.name}\n\nOriginal Fare: ₹${originalPrice}\nCancellation Charges (30%): ₹${deduction}\nRefund Amount (70%): ₹${refund}\nReason: ${reason}\n\nRefund will be processed within 5-7 days.\n\nThank you for using TravelEasy!`;
+                
+                let emailSubject = `TravelEasy Ticket Cancelled - ID: ${ticketId}`;
+                
+                alert(`❌ Ticket Cancelled\n------------------------\nTicket ID: ${ticketId}\nOriginal Fare: ₹${originalPrice}\nCancellation Charges (30%): ₹${deduction}\nRefund Amount (70%): ₹${refund}\n------------------------\nRefund will be processed within 5-7 days.\n\nCancellation confirmation sent to your email and WhatsApp.`);
+                
+                // Send confirmation
+                let mailtoUrl = `mailto:${booking.email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(cancelMessage)}`;
+                window.open(mailtoUrl, '_blank');
+                
+                let whatsappUrl = `https://wa.me/${booking.phone}?text=${encodeURIComponent(cancelMessage)}`;
+                window.open(whatsappUrl, '_blank');
+                
+                return true;
+            } else {
+                alert("❌ Ticket ID not found or Phone number doesn't match.");
+                return false;
+            }
+        }
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
